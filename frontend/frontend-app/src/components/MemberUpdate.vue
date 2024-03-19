@@ -2,8 +2,10 @@
   <div>
     <h2>Update Member</h2>
     <form @submit.prevent="updateMember">
-      <label for="username">New Username:</label>
-      <input type="text" id="username" v-model="newUsername" required>
+      <label for="memberId">Member ID:</label>
+      <input type="text" id="memberId" v-model="memberId" required>
+      <label for="newUsername">New Username:</label>
+      <input type="text" id="newUsername" v-model="newUsername" required>
       <button type="submit">Update Member</button>
     </form>
     <p v-if="message">{{ message }}</p>
@@ -16,21 +18,20 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      memberId: '',
       newUsername: '',
       message: ''
     };
   },
   methods: {
     updateMember() {
-      const memberId = this.$route.params.id; // Extract member ID from route params
-
       // Prepare data to be sent in the request
       const requestData = {
         username: this.newUsername
       };
 
       // Make API request to update the member
-      axios.put(`http://goserver:3000/member/${memberId}`, requestData)
+      axios.put(`https://edb0-104-198-4-130.ngrok-free.app/member/${this.memberId}`, requestData)
         .then(response => {
           this.message = response.data.message;
         })

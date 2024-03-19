@@ -12,17 +12,12 @@ const routes = [
     component: () => import('../components/TestView.vue')
   },
   {
-    path: '/transaction/:memberId',
+    path: '/transactions',
     name: 'transaction',
-    props: (route) => ({
-      memberId: route.params.memberId,
-      startTime: route.query.startTime,
-      endTime: route.query.endTime,
-    }),
     component: () => import('../components/TransactionView.vue'), 
   },
   {
-    path: '/member-update/:memberId',
+    path: '/member-update',
     name: 'member-update',
     props: (route) => ({
       memberId: route.params.memberId,
@@ -30,7 +25,7 @@ const routes = [
     component: () => import('../components/MemberUpdate.vue'), 
   },
   {
-    path: '/member-get/:memberId',
+    path: '/member-get',
     name: 'member-get',
     props: (route) => ({
       memberId: route.params.memberId,
@@ -38,7 +33,7 @@ const routes = [
     component: () => import('../components/MemberGet.vue'), 
   },
   {
-    path: '/member-create/:memberId',
+    path: '/member-create',
     name: 'member-create',
     component: () => import('../components/MemberCreate.vue'), 
   }

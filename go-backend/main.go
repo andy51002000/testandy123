@@ -9,9 +9,6 @@ import (
     "fmt"
 )
 
-import "github.com/gin-contrib/cors"
-
-
 type Member struct {
     PK         uint       `gorm:"primary_key" json:"pk"`
     Username   string     `json:"username"`
@@ -39,12 +36,20 @@ func main() {
 
     r := gin.Default()
 
+    // Enable CORS
+    r.Use(func(c *gin.Context) {
+        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+        c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
+        c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 
-    // Use CORS middleware to allow all origins
-    config := cors.DefaultConfig()
-    config.AllowAllOrigins = true
-    r.Use(cors.New(config))
+        if c.Request.Method == "OPTIONS" {
+            c.AbortWithStatus(204)
+            return
+        }
 
+        c.Next()
+    })
 
     // GET all members
     r.GET("/members", func(c *gin.Context) {
@@ -53,7 +58,6 @@ func main() {
         c.JSON(200, members)
     })
 
-    // GET member by ID
     // GET member by ID
     r.GET("/member/:id", func(c *gin.Context) {
         var member Member
@@ -69,8 +73,8 @@ func main() {
             Where("member_fk = ? AND create_time >= ?", id, time.Now().AddDate(0, 0, -365)).
             Select("sum(borrow_fee)").
             Row().Scan(&totalFee); err != nil {
-            c.JSON(500, gin.H{"error": "Failed to retrieve transaction amount"})
-            return
+            // Set total fee to 0 if error occurs
+            totalFee = 0
         }
 
         // Prepare the response with customer information and transaction amount
@@ -84,7 +88,6 @@ func main() {
         // Return the response
         c.JSON(200, response)
     })
-
 
     // PUT update member by ID
     r.PUT("/member/:id", func(c *gin.Context) {
@@ -127,7 +130,6 @@ func main() {
         c.JSON(200, gin.H{"message": "Member created successfully", "pk": member.PK})
     })
 
-    
     // GET transaction records for a specific customer within a specified time range
     r.GET("/transactions/:memberID", func(c *gin.Context) {
         memberID := c.Param("memberID")
@@ -136,7 +138,6 @@ func main() {
         startTimeStr := c.Query("startTime")
         endTimeStr := c.Query("endTime")
 
-        
         // Convert startTime and endTime to time.Time
         startTime, err := time.Parse(time.RFC3339, startTimeStr)
         if err != nil {
@@ -154,15 +155,13 @@ func main() {
             c.JSON(500, gin.H{"error": "Failed to retrieve transactions"})
             return
         }
-        
+
         // Log transactions for debugging
         for i, transaction := range transactions {
             fmt.Printf("Transaction %d: %+v\n", i+1, transaction)
-        }        
+        }
         c.JSON(200, transactions)
     })
 
-    
     r.Run(":3000") // listen and serve on 0.0.0.0:3000
 }
-

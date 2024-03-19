@@ -28,7 +28,7 @@ export default {
       };
 
       // Make API request to create a new member
-      axios.post('http://goserver:3000/member', requestData)
+      axios.post('https://edb0-104-198-4-130.ngrok-free.app/member', requestData)
         .then(response => {
           this.message = response.data.message;
         })
