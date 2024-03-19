@@ -1,0 +1,6 @@
+runtime: go
+env: flex
+service: testbk
+handlers:
+- url: /.*
+  script: auto

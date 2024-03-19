@@ -1,0 +1,1 @@
+docker build -t gcr.io/repo-backend/goserver:v1 .
